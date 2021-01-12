@@ -1,6 +1,7 @@
 ﻿namespace GasSim
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>A simulation space for fluid simulation</summary>
     public class Simulation : ISimulation
@@ -32,7 +33,14 @@
             set => this.groups = value;
         }
 
-        /// <summary>Gets or sets the maximum number of cells to attempt to simulate per tick</summary>
+        /// <summary>Gets or sets the maximum number of cells in a group</summary>
+        public int MaxGroupSize
+        {
+            get;
+            set;
+        }
+
+        /// <summary>Gets or sets the maximum number of cells to attempt to operate on per tick</summary>
         public int MaxStepsToSimulate
         {
             get => this.maxStepsToSimulate;
@@ -60,7 +68,7 @@
         /// <summary>Creates a new <see cref="CellGroup" /> in the simulation space</summary>
         /// <param name="simulate">Is this group simulated</param>
         /// <param name="initialCells">
-        /// The initial set of <see cref="Cell" /> to include in the <see cref="CellGroup&gt;" />
+        /// The initial set of <see cref="Cell" /> to include in the <see cref="CellGroup" />
         /// </param>
         /// <param name="fluids">
         /// The initial <see cref="Fluid" /> in the <see cref="CellGroup" />
@@ -79,7 +87,29 @@
         /// <returns>The number of simulation steps remaining</returns>
         public int Expand(int stepsToSimulate)
         {
+            ICellGroup currentGroup = this.groups.FirstOrDefault(p => p.Fringe != null ? p.Fringe.Any() : false);
+
+            while ((stepsToSimulate > 0) && (currentGroup != null))
+            {
+                ICell cell = currentGroup.Fringe.FirstOrDefault();
+                currentGroup.Fringe.Remove(cell);
+                currentGroup.Add(cell);
+
+                foreach (ICell c in cell.Neighbours)
+                {
+                    currentGroup.Fringe.Add(c);
+                }
+
+                stepsToSimulate -= cell.Neighbours.Count + 1;
+            }
+
             return stepsToSimulate;
+        }
+
+        /// <summary>Method called to simulate the simulation space</summary>
+        public void Simulate()
+        {
+            this.Simulate(this.MaxStepsToSimulate);
         }
 
         /// <summary>Method called to simulate the simulation space</summary>

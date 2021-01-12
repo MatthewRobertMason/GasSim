@@ -21,6 +21,13 @@
             set;
         }
 
+        /// <summary>Gets or sets the maximum number of cells in a group</summary>
+        public int MaxGroupSize
+        {
+            get;
+            set;
+        }
+
         /// <summary>Gets or sets the maximum number of cells to attempt to simulate per tick</summary>
         public int MaxStepsToSimulate
         {

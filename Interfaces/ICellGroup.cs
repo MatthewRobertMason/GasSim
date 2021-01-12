@@ -65,6 +65,10 @@
             get;
         }
 
+        /// <summary>Adds a cell to a <see cref="CellGroup" /></summary>
+        /// <param name="cell">The cell to add to the group</param>
+        public void Add(ICell cell);
+
         /// <summary>Adds a fluid to the group</summary>
         /// <param name="fluid">The fluid to be added to the group</param>
         /// <returns>true if successful</returns>

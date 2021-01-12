@@ -22,6 +22,7 @@
             this.Simulate = true;
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
+            this.Fringe = new HashSet<ICell>();
         }
 
         /// <summary>Initialises a new instance of the <see cref="CellGroup" /> class</summary>
@@ -45,6 +46,7 @@
             this.Simulate = simulate;
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
+            this.Fringe = new HashSet<ICell>();
         }
 
         /// <summary>Initialises a new instance of the <see cref="CellGroup" /> class</summary>
@@ -55,17 +57,15 @@
         {
             this.Simulate = simulate;
             this.Group = initialCells ?? throw new ArgumentNullException(nameof(initialCells));
+            this.Fringe = new HashSet<ICell>();
 
             foreach (ICell cell in this.group)
             {
                 cell.Group = this;
 
-                foreach (ICell n in cell.Neighbours)
+                foreach (ICell n in cell.Neighbours.Except(this.Group))
                 {
-                    if (!this.group.Contains(n))
-                    {
-                        this.fringe.Add(n);
-                    }
+                    this.fringe.Add(n);
                 }
             }
 
@@ -141,6 +141,19 @@
             private set => this.stable = value;
         }
 
+        /// <summary>Adds a cell to a <see cref="CellGroup" /></summary>
+        /// <param name="cell">The cell to add to the group</param>
+        public void Add(ICell cell)
+        {
+            this.Group.Add(cell);
+            cell.Group = this;
+
+            foreach (ICell c in cell.Neighbours.Except(this.Group))
+            {
+                this.Fringe.Add(c);
+            }
+        }
+
         /// <summary>Adds a fluid to the group</summary>
         /// <param name="fluid">The fluid to be added to the group</param>
         /// <returns>true if successful</returns>
@@ -161,16 +174,6 @@
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Adds a cell to a <see cref="CellGroup"/>
-        /// </summary>
-        /// <param name="cell">The cell to add to the group</param>
-        public void Add(ICell cell)
-        {
-            this.Group.Add(cell);
-            cell.Group = this;
         }
     }
 }
