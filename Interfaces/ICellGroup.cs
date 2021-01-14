@@ -30,13 +30,19 @@
         }
 
         /// <summary>Gets the cells that will be joined to this group</summary>
-        public ISet<ICell> Fringe
+        public Queue<ICell> Fringe
         {
             get;
         }
 
         /// <summary>Gets the set of cells in this grouping</summary>
         public ISet<ICell> Group
+        {
+            get;
+        }
+
+        /// <summary>Gets the ID of the group</summary>
+        public int ID
         {
             get;
         }

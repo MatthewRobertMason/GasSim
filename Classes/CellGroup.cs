@@ -10,8 +10,9 @@
         private bool enabled;
         private bool expand;
         private IDictionary<string, IFluid> fluids;
-        private ISet<ICell> fringe;
+        private Queue<ICell> fringe;
         private ISet<ICell> group;
+        private int id;
         private ISet<ICellGroup> linkedGroups;
         private bool simulate;
         private bool stable;
@@ -22,7 +23,7 @@
             this.Simulate = true;
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
-            this.Fringe = new HashSet<ICell>();
+            this.Fringe = new Queue<ICell>();
         }
 
         /// <summary>Initialises a new instance of the <see cref="CellGroup" /> class</summary>
@@ -46,7 +47,7 @@
             this.Simulate = simulate;
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
-            this.Fringe = new HashSet<ICell>();
+            this.Fringe = new Queue<ICell>();
         }
 
         /// <summary>Initialises a new instance of the <see cref="CellGroup" /> class</summary>
@@ -56,17 +57,11 @@
         public CellGroup(bool simulate, ISet<ICell> initialCells, IDictionary<string, IFluid> fluids)
         {
             this.Simulate = simulate;
-            this.Group = initialCells ?? throw new ArgumentNullException(nameof(initialCells));
-            this.Fringe = new HashSet<ICell>();
+            this.Fringe = new Queue<ICell>();
 
-            foreach (ICell cell in this.group)
+            foreach (ICell cell in initialCells ?? throw new ArgumentNullException(nameof(initialCells)))
             {
-                cell.Group = this;
-
-                foreach (ICell n in cell.Neighbours.Except(this.Group))
-                {
-                    this.fringe.Add(n);
-                }
+                this.Add(cell);
             }
 
             this.Fluids = fluids ?? throw new ArgumentNullException(nameof(fluids));
@@ -100,7 +95,7 @@
         }
 
         /// <summary>Gets the cells that will be joined to this group</summary>
-        public ISet<ICell> Fringe
+        public Queue<ICell> Fringe
         {
             get => this.fringe;
             private set => this.fringe = value;
@@ -111,6 +106,13 @@
         {
             get => this.group;
             private set => this.group = value;
+        }
+
+        /// <summary>Gets the ID of the group</summary>
+        public int ID
+        {
+            get => this.id;
+            private set => this.id = value;
         }
 
         /// <summary>Gets other groups that share a border with this one, shares fluids</summary>
@@ -145,12 +147,18 @@
         /// <param name="cell">The cell to add to the group</param>
         public void Add(ICell cell)
         {
-            this.Group.Add(cell);
-            cell.Group = this;
-
-            foreach (ICell c in cell.Neighbours.Except(this.Group))
+            if (cell.Group == null)
             {
-                this.Fringe.Add(c);
+                this.Group.Add(cell);
+                cell.Group = this;
+
+                foreach (ICell c in cell.Neighbours.Except(this.Group))
+                {
+                    if ((c.Group == null) && (!this.Fringe.Contains(c)))
+                    {
+                        this.Fringe.Enqueue(c);
+                    }
+                }
             }
         }
 

@@ -87,20 +87,19 @@
         /// <returns>The number of simulation steps remaining</returns>
         public int Expand(int stepsToSimulate)
         {
-            ICellGroup currentGroup = this.groups.FirstOrDefault(p => p.Fringe != null ? p.Fringe.Any() : false);
+            ICellGroup currentGroup = this.groups.FirstOrDefault(p => p.Fringe != null && p.Fringe.Any());
 
             while ((stepsToSimulate > 0) && (currentGroup != null))
             {
-                ICell cell = currentGroup.Fringe.FirstOrDefault();
-                currentGroup.Fringe.Remove(cell);
-                currentGroup.Add(cell);
+                ICell cell = currentGroup.Fringe.Any() ? currentGroup.Fringe.Dequeue() : null;
 
-                foreach (ICell c in cell.Neighbours)
+                if (cell == null)
                 {
-                    currentGroup.Fringe.Add(c);
+                    return stepsToSimulate;
                 }
 
-                stepsToSimulate -= cell.Neighbours.Count + 1;
+                currentGroup.Add(cell);
+                stepsToSimulate--;
             }
 
             return stepsToSimulate;
