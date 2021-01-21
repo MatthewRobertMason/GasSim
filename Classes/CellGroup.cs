@@ -21,6 +21,9 @@
         public CellGroup()
         {
             this.Simulate = true;
+            this.Enabled = true;
+            this.Expand = true;
+            this.Stable = false;
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
             this.Fringe = new Queue<ICell>();
@@ -45,6 +48,9 @@
         public CellGroup(bool simulate)
         {
             this.Simulate = simulate;
+            this.Enabled = true;
+            this.Expand = true;
+            this.Stable = false;
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
             this.Fringe = new Queue<ICell>();
@@ -57,6 +63,9 @@
         public CellGroup(bool simulate, ISet<ICell> initialCells, IDictionary<string, IFluid> fluids)
         {
             this.Simulate = simulate;
+            this.Enabled = true;
+            this.Expand = true;
+            this.Stable = false;
             this.Fringe = new Queue<ICell>();
 
             foreach (ICell cell in initialCells ?? throw new ArgumentNullException(nameof(initialCells)))
@@ -78,13 +87,13 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether this group can currently expand? Limit groups to max
-        /// group size and link nearby groups
+        /// Gets or sets a value indicating whether this group can currently expand? Limit groups to
+        /// max group size and link nearby groups
         /// </summary>
         public bool Expand
         {
             get => this.expand;
-            private set => this.expand = value;
+            set => this.expand = value;
         }
 
         /// <summary>Gets the Fluids that exist in this group</summary>

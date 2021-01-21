@@ -87,7 +87,13 @@
         /// <returns>The number of simulation steps remaining</returns>
         public int Expand(int stepsToSimulate)
         {
-            ICellGroup currentGroup = this.groups.FirstOrDefault(p => p.Fringe != null && p.Fringe.Any());
+            ICellGroup currentGroup = this.groups.FirstOrDefault(p =>
+                p.Fringe != null &&
+                p.Fringe.Any() &&
+                p.Enabled &&
+                p.Simulate &&
+                p.Expand &&
+                !p.Stable);
 
             while ((stepsToSimulate > 0) && (currentGroup != null))
             {
@@ -99,6 +105,12 @@
                 }
 
                 currentGroup.Add(cell);
+
+                if (currentGroup.Group.Count() >= this.MaxGroupSize)
+                {
+                    currentGroup.Expand = false;
+                }
+
                 stepsToSimulate--;
             }
 

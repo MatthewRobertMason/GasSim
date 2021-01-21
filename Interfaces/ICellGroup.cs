@@ -15,12 +15,13 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether this group can currently expand? Limit groups to max
-        /// group size and link nearby groups
+        /// Gets or sets a value indicating whether this group can currently expand? Limit groups to
+        /// max group size and link nearby groups
         /// </summary>
         public bool Expand
         {
             get;
+            set;
         }
 
         /// <summary>Gets the Fluids that exist in this group</summary>
