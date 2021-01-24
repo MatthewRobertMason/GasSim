@@ -37,8 +37,8 @@
         /// <summary>Gets or sets the maximum number of cells in a group</summary>
         public int MaxGroupSize
         {
-            get => maxGroupSize;
-            set => maxGroupSize = value;
+            get => this.maxGroupSize;
+            set => this.maxGroupSize = value;
         }
 
         /// <summary>Gets or sets the maximum number of cells to attempt to operate on per tick</summary>
@@ -106,6 +106,28 @@
                 }
 
                 currentGroup.Add(cell);
+
+                foreach (ICell c in cell.Neighbours.Except(currentGroup.Group))
+                {
+                    if ((c.Group == null) && (!currentGroup.Fringe.Contains(c)))
+                    {
+                        // Cell doesn't have a group
+                        currentGroup.Fringe.Enqueue(c);
+                    }
+                    //else if (c.Group != null && !currentGroup.Fringe.Contains(c))
+                    //{
+                    //    ICellGroup unionGroup = c.Group;
+                    //
+                    //    if (unionGroup.Group.Count < this.MaxGroupSize && unionGroup.Group.Count < stepsToSimulate)
+                    //    {
+                    //        // Cell has a group, try to merge if we have steps to do so
+                    //        stepsToSimulate -= unionGroup.Group.Count;
+                    //        currentGroup.UnionGroup(unionGroup);
+                    //
+                    //        this.groups.Remove(unionGroup);
+                    //    }
+                    //}
+                }
 
                 if (currentGroup.Group.Count() >= this.MaxGroupSize)
                 {

@@ -80,5 +80,10 @@
         /// <param name="fluid">The fluid to be added to the group</param>
         /// <returns>true if successful</returns>
         public bool AddFluid(IFluid fluid);
+
+        /// <summary>Unions two groups into one</summary>
+        /// <param name="unionGroup">The group to add to the current group</param>
+        /// <returns>true if successful</returns>
+        public bool UnionGroup(ICellGroup unionGroup);
     }
 }

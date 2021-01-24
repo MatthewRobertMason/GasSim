@@ -164,13 +164,7 @@
                 this.Group.Add(cell);
                 cell.Group = this;
 
-                foreach (ICell c in cell.Neighbours.Except(this.Group))
-                {
-                    if ((c.Group == null) && (!this.Fringe.Contains(c)))
-                    {
-                        this.Fringe.Enqueue(c);
-                    }
-                }
+                this.AddNeighbourToFringe(cell);
             }
         }
 
@@ -194,6 +188,53 @@
             }
 
             return true;
+        }
+
+        /// <summary>Unions two groups into one</summary>
+        /// <param name="unionGroup">The group to add to the current group</param>
+        /// <returns>true if successful</returns>
+        public bool UnionGroup(ICellGroup unionGroup)
+        {
+            foreach (ICell d in unionGroup.Group)
+            {
+                d.Group = this;
+                this.Group.Add(d);
+            }
+
+            foreach (ICell fringe in unionGroup.Fringe)
+            {
+                this.Fringe.Enqueue(fringe);
+            }
+
+            foreach (IFluid fluid in unionGroup.Fluids.Values)
+            {
+                this.AddFluid(fluid);
+            }
+
+            foreach (ICellGroup cellGroup in unionGroup.LinkedGroups)
+            {
+                this.LinkedGroups.Add(cellGroup);
+            }
+
+            unionGroup.Group.Clear();
+            unionGroup.Fringe.Clear();
+            unionGroup.Fluids.Clear();
+            unionGroup.LinkedGroups.Clear();
+
+            return true;
+        }
+
+        /// <summary>Adds neighbours of cell to the fringe</summary>
+        /// <param name="cell">The cell to get the neighbours from</param>
+        private void AddNeighbourToFringe(ICell cell)
+        {
+            foreach (ICell neighbour in cell.Neighbours)
+            {
+                if (!this.Fringe.Contains(neighbour) && neighbour.Group == null)
+                {
+                    this.Fringe.Enqueue(neighbour);
+                }
+            }
         }
     }
 }

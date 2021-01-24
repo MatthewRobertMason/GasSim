@@ -59,6 +59,7 @@
 
             do
             {
+                Console.WriteLine();
                 simulation.Simulate();
                 TestFunctions.Display2DimensionalWorld(width, height, cell);
                 keyPress = Console.ReadKey().Key;
