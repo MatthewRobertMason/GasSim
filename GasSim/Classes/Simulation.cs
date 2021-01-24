@@ -8,6 +8,7 @@
     {
         private ISet<ICell> cells;
         private IList<ICellGroup> groups;
+        private int maxGroupSize;
         private int maxStepsToSimulate;
 
         /// <summary>Initialises a new instance of the <see cref="Simulation" /> class</summary>
@@ -36,8 +37,8 @@
         /// <summary>Gets or sets the maximum number of cells in a group</summary>
         public int MaxGroupSize
         {
-            get;
-            set;
+            get => maxGroupSize;
+            set => maxGroupSize = value;
         }
 
         /// <summary>Gets or sets the maximum number of cells to attempt to operate on per tick</summary>
@@ -109,6 +110,21 @@
                 if (currentGroup.Group.Count() >= this.MaxGroupSize)
                 {
                     currentGroup.Expand = false;
+                    foreach (ICell fringeCell in currentGroup.Fringe)
+                    {
+                        ICellGroup newGroup = new CellGroup(true);
+                        newGroup.Add(fringeCell);
+                        currentGroup.LinkedGroups.Add(newGroup);
+
+                        foreach (KeyValuePair<string, IFluid> fluid in currentGroup.Fluids)
+                        {
+                            newGroup.AddFluid(fluid.Value);
+                        }
+
+                        this.groups.Add(newGroup);
+                    }
+
+                    currentGroup.Fringe.Clear();
                 }
 
                 stepsToSimulate--;

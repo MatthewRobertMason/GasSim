@@ -1,7 +1,6 @@
 ﻿namespace GasSimTester
 {
     using System;
-
     using GasSim;
     using GasSimTester.Enums;
     using System.Collections.Generic;
@@ -37,7 +36,11 @@
                 cells.Add(c);
             }
 
-            Simulation simulation = new Simulation(cells);
+            Simulation simulation = new Simulation(cells)
+            {
+                MaxGroupSize = 30,
+                MaxStepsToSimulate = 10
+            };
 
             Fluid oxyFluidToAdd = new Fluid(FluidTypes.Oxygen.ToString(), FluidTypes.Oxygen.ToString(), 101.6f, 290.0f);
             Fluid hydFluidToAdd = new Fluid(FluidTypes.Hydrogen.ToString(), FluidTypes.Hydrogen.ToString(), 101.6f, 290.0f);
@@ -50,14 +53,16 @@
             cellGroup2.Add(cell[9, 9]);
             cell[9, 9].AddFluid(hydFluidToAdd);
 
-            simulation.MaxStepsToSimulate = 10;
-
             TestFunctions.Display2DimensionalWorld(width, height, cell);
-            for (int simSteps = 0; simSteps < 3 && !simulation.Stable; simSteps++)
+
+            ConsoleKey keyPress = Console.ReadKey().Key;
+
+            do
             {
                 simulation.Simulate();
                 TestFunctions.Display2DimensionalWorld(width, height, cell);
-            }
+                keyPress = Console.ReadKey().Key;
+            } while (keyPress != ConsoleKey.Escape);
         }
     }
 }

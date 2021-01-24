@@ -27,6 +27,7 @@
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
             this.Fringe = new Queue<ICell>();
+            this.LinkedGroups = new HashSet<ICellGroup>();
         }
 
         /// <summary>Initialises a new instance of the <see cref="CellGroup" /> class</summary>
@@ -54,6 +55,7 @@
             this.Group = new HashSet<ICell>();
             this.Fluids = new Dictionary<string, IFluid>();
             this.Fringe = new Queue<ICell>();
+            this.LinkedGroups = new HashSet<ICellGroup>();
         }
 
         /// <summary>Initialises a new instance of the <see cref="CellGroup" /> class</summary>
@@ -74,6 +76,7 @@
             }
 
             this.Fluids = fluids ?? throw new ArgumentNullException(nameof(fluids));
+            this.LinkedGroups = new HashSet<ICellGroup>();
         }
 
         /// <summary>
